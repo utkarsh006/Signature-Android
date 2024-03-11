@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -50,10 +51,6 @@ class SignatureView(context: Context) : View(context) {
         paint.color = strokeColor
     }
 
-    // Method to set background color
-    fun setBackground() {
-        this.background = background
-    }
 
     // Handle touch events
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -69,12 +66,17 @@ class SignatureView(context: Context) : View(context) {
             MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP -> {
                 // When touch moves or is released, draw a line to the current touch point
                 val historySize = event.historySize
-                for (i in 0 until historySize) {
-                    val historicalX = event.getHistoricalX(i)
-                    val historicalY = event.getHistoricalY(i)
-                    path.lineTo(historicalX, historicalY)
+                Log.d("size", historySize.toString())
+                if (historySize < 1) {
+                    path.lineTo(event.x, event.y + 10)
+                } else {
+                    for (i in 0 until historySize) {
+                        val historicalX = event.getHistoricalX(i)
+                        val historicalY = event.getHistoricalY(i)
+                        path.lineTo(historicalX, historicalY)
+                    }
+                    path.lineTo(event.x, event.y)
                 }
-                path.lineTo(event.x, event.y)
             }
 
             else -> {
